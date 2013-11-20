@@ -114,15 +114,6 @@ u12 convertBytesToU12(u8* bytes) {
 
 
 
-
-u8 getStackTop() {
-	u8 top = memory[cpu->sp - 1];
-
-	return top;
-}
-
-
-
 void runCPU() {
 
 	while(cpu->pc < 9) {
@@ -145,9 +136,8 @@ void runCPU() {
 					break; 
 
 					case 0x00EE: ;//RET
-						/*u8 ret = getStackTop();
+						u16 ret = popStack();
 						cpu->pc = ret;
-						cpu->sp--;*/
 
 						printf("RET\n");
 
