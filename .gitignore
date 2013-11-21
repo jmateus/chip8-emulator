@@ -1,3 +1,5 @@
 *.exe
 
+SDL2.dll
+sdl2-config
 /Programs

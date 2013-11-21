@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <time.h>
 
 #define MEMORY_SIZE 4096
 #define SCREEN_SIZE_BYTES 256
@@ -24,7 +25,7 @@ typedef unsigned int u32;
 
 typedef struct {
 	u8 registers[NUMBER_OF_REGISTERS]; //V0, V1,..., VE, VF
-	u8 I; //registo I
+	u16 I; //registo I
 
 	u8 dt; // delay timer
 	u8 st; //sound timer
@@ -205,6 +206,36 @@ void shiftLeft(u8 reg, u8 numOfShifts) {
 }
 
 
+void storeToMemory(u12 position, u8 value) {
+	memory[position] = value;
+}
+
+u8 getFromMemory(u12 position) {
+	return memory[position];
+}
+
+
+void storeRegisters(u12 addr, u4 reg) {
+	int i;
+	for(i = 0; i <= reg; i++) {
+		u8 regValue = getRegister(i);
+		storeToMemory(addr + i, regValue);
+	}
+}
+
+void loadRegisters(u12 addr, u4 reg) {
+	int i;
+	for(i = 0; i <= reg; i++) {
+		u8 value = getFromMemory(addr + i);
+		setRegister(i, value);
+	}
+}
+
+u8 generateRandomNumber() {
+	u8 rnd = rand() % 256;
+	return rnd;
+}
+
 
 void runCPU() {
 
@@ -217,7 +248,7 @@ void runCPU() {
 		u4 lead = (high >> 4) & 0x0F;
 
 		switch(lead) {
-			case 0: ;
+			case 0x0: ;
 			{
 				u12 number = convertBytesToU12(instr);
 
@@ -238,8 +269,7 @@ void runCPU() {
 
 					default: ;//system call
 						//nop
-
-					printf("SYS CALL\n");
+						printf("SYS CALL\n");
 				}
 
 
@@ -247,7 +277,7 @@ void runCPU() {
 
 			}
 
-			case 1: ; //JUMP addr (1nnn)
+			case 0x1: ; //JUMP addr (1nnn)
 			{
 				u12 addr = convertBytesToU12(instr);
 				cpu->pc = addr;
@@ -255,7 +285,7 @@ void runCPU() {
 				break;
 			}
 
-			case 2: ; //CALL addr (2nnn)
+			case 0x2: ; //CALL addr (2nnn)
 			{
 				pushStack(cpu->pc);
 				u12 addr = convertBytesToU12(instr);
@@ -264,7 +294,7 @@ void runCPU() {
 				break;
 			}
 
-			case 3: ; //SKIP EQUAL (3xkk)
+			case 0x3: ; //SKIP EQUAL (3xkk)
 			{
 				u4 regIndex = getLowU4(high);
 				u8 regValue = getRegister(regIndex);
@@ -276,7 +306,7 @@ void runCPU() {
 				break;
 			}
 
-			case 4: ; //SKIP NOT EQUAL (4xkk)
+			case 0x4: ; //SKIP NOT EQUAL (4xkk)
 			{
 				u4 regIndex = getLowU4(high);
 				u8 regValue = getRegister(regIndex);
@@ -288,7 +318,7 @@ void runCPU() {
 				break;
 			}
 
-			case 5: ; // SKIP EQUAL (5xy0)
+			case 0x5: ; // SKIP EQUAL (5xy0)
 			{
 				u4 firstRegIndex = getLowU4(high);
 				u8 firstRegValue = getRegister(firstRegIndex);
@@ -305,7 +335,7 @@ void runCPU() {
 				break;
 			}
 
-			case 6: ; // LOAD (6xkk)
+			case 0x6: ; // LOAD (6xkk)
 			{
 				u4 regIndex = getLowU4(high);
 
@@ -314,7 +344,7 @@ void runCPU() {
 				break;
 			}
 
-			case 7: ; // ADD (7xkk)
+			case 0x7: ; // ADD (7xkk)
 			{
 				u4 regIndex = getLowU4(high);
 				u8 regValue = getRegister(regIndex);
@@ -324,7 +354,7 @@ void runCPU() {
 				break;
 			}
 
-			case 8: ; // (8xyk)
+			case 0x8: ; // (8xyk)
 			{
 				u4 firstRegIndex = getLowU4(high);
 				u8 firstRegValue = getRegister(firstRegIndex);
@@ -391,7 +421,7 @@ void runCPU() {
 				break;
 			}
 
-			case 9: ; // SKIP NOT EQUAL (9xy0)
+			case 0x9: ; // SKIP NOT EQUAL (9xy0)
 			{
 				u4 firstRegIndex = getLowU4(high);
 				u8 firstRegValue = getRegister(firstRegIndex);
@@ -402,6 +432,130 @@ void runCPU() {
 
 				if(firstRegValue != secondRegValue) {
 					skipNextInstruction();
+				}
+
+				break;
+			}
+
+			case 0xA: ; // LOAD I, addr (Annn)
+			{
+				u12 addr = convertBytesToU12(instr);
+				cpu->I = addr;
+
+				break;
+			}
+
+			case 0xB: ; // JUMP V0 + nnn (Bnnn)
+			{
+				u12 addr = convertBytesToU12(instr);
+				u16 newAddr = addr + getRegister(0);
+				cpu->pc = newAddr;
+
+				break;
+			}
+
+			case 0xC: ; // Vx = random byte AND kk (Cxkk)
+			{
+				u8 rnd = 0; //TODO
+				u4 regIndex = getLowU4(high);
+				setRegister(regIndex, rnd & low);
+
+				break;
+			}
+
+			case 0xD: ; // Display TODO
+			{
+				break;
+			}
+
+			case 0xE: ; // Input
+			{
+				u4 regIndex = getLowU4(high);
+
+				switch(low) {
+					case 0x9E: ; // SKIP if Vx is pressed
+					{
+						//TODO
+
+						break;
+					}
+
+					case 0xA1: ; //SKIP if Vx is not pressed
+					{
+						//TODO
+
+						break;
+					}
+
+					default: ; //invalid input op
+						printf("[ERROR] Invalid op for instruction 0xExxx\n");
+				}
+
+				break;
+			}
+
+			case 0xF: ; // Fxkk
+			{
+				u4 reg = getLowU4(high);
+
+				switch(low) {
+					case 0x07: ; // LOAD Vx, DT
+					{
+						setRegister(reg, cpu->dt);
+						break;
+					}
+
+					case 0x0A: ; // LOAD Vx, K
+					{
+						//TODO
+						break;
+					}
+
+					case 0x15: ; // LOAD DT, Vx
+					{
+						cpu->dt = getRegister(reg);
+						break;
+					}
+
+					case 0x18: ; // LOAD ST, Vx
+					{
+						cpu->st = getRegister(reg);
+						break;
+					}
+
+					case 0x1E: ; // ADD I, Vx
+					{
+						u16 result = cpu->I + getRegister(reg);
+						cpu->I = result;
+						break;
+					}
+
+					case 0x33: ; // LD B, Vx
+					{
+						u8 regValue = getRegister(reg);
+						u8 hundreads = regValue / 100;
+						u8 tens = regValue / 10;
+						u8 units = regValue % 10;
+
+						u12 I = cpu->I;
+						storeToMemory(I, hundreads);
+						storeToMemory(I+1, tens);
+						storeToMemory(I+2, units);
+
+						break;
+					}
+
+					case 0x55: ; // LD [I], Vx
+					{
+						storeRegisters(cpu->I, reg);
+						break;
+					}
+
+					case 0x65: ; // LD Vx, [I]
+					{
+						loadRegisters(cpu->I, reg);
+						break;
+					}
 				}
 
 				break;
@@ -429,6 +583,8 @@ int main(int argc, char* argv[]) {
 
 	memory = (u8*) malloc(sizeof(u8) * MEMORY_SIZE);
 	screen = (u8*) malloc(sizeof(u8) * SCREEN_SIZE_BYTES);
+
+	srand(time(NULL));
 
 	memory[0] = 0x00;
 	memory[1] = 0xEE;
