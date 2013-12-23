@@ -4,122 +4,18 @@
 #include <stdbool.h>
 #include <time.h>
 
-#define MEMORY_SIZE 4096
+#include "cpu.h"
+#include "types.h"
+#include "memory.h"
+
+
 #define SCREEN_SIZE_BYTES 256
 #define SCREEN_WIDTH 64
 #define SCREEN_HEIGHT 32
-#define PROGRAM_OFFSET 0x200
-#define STACK_OFFSET 0
-#define NUMBER_OF_REGISTERS 16
-#define CPU_FREQ 60
-#define REGISTER_MAX_VALUE 255
-#define FLAG_REGISTER_INDEX 0xF
-
-#define INSTRUCTION_SIZE 2
-
-typedef uint8_t u8;
-typedef u8 u4;
-typedef uint16_t u16;
-typedef u16 u12;
-typedef unsigned int u32;
-
-typedef struct {
-	u8 registers[NUMBER_OF_REGISTERS]; //V0, V1,..., VE, VF
-	u16 I; //registo I
-
-	u8 dt; // delay timer
-	u8 st; //sound timer
-
-	u16 pc; // program counter
-	u8 sp; // stack pointer
-
-} CPU;
 
 
-CPU* cpu;
-u8* memory;
-u8* screen;
+static CPU* cpu;
 
-
-u8 readNextByte() {
-	u8 next = memory[cpu->pc];
-	cpu->pc++;
-
-	return next;
-}
-
-
-u16 popStack() {
-	u16 top = 0;
-
-	top += memory[cpu->sp-2];
-	top = (top << 8) & 0xFF00;
-	top += memory[cpu->sp-1];
-
-	cpu->sp -= 2;
-
-	return top;
-}
-
-void pushStack(u16 value) {
-	u8 high = (value >> 8) & 0x00FF;
-	u8 low = value & 0x00FF;
-
-	memory[cpu->sp] = high;
-	memory[cpu->sp + 1] = low;
-
-	cpu->sp += 2;
-}
-
-
-
-u8* readNextBytes(u16 numberBytes) {
-	u8* bytes = (u8*) malloc(sizeof(u8) * numberBytes);
-
-	int i;
-	for(i = 0; i < numberBytes; i++) {
-		bytes[i] = readNextByte();
-	}
-
-	return bytes;
-
-}
-
-u32 convertBytesToU32(u8* bytes, u16 max) {
-
-	u32 number = 0;
-
-	int i;
-	for(i = 0; i < max; i++) {
-		number = (number << 8*i) & 0xFFFFFF00;
-		number += bytes[i];
-	}
-
-	return number;
-
-}
-
-
-u12 convertBytesToU12(u8* bytes) {
-
-	u12 number = 0;
-
-	number += bytes[0];
-	number = (number << 8) & 0x0F00;
-	number += bytes[1];
-
-	return number;
-}
-
-u4 getHighU4(u8 number) {
-	u4 high = (number >> 4) & 0x0F;
-	return high; 
-}
-
-u4 getLowU4(u8 number) {
-	u4 low = number & 0x0F;
-	return low; 
-}
 
 void setRegister(u4 regist, u8 value) {
 	cpu->registers[regist] = value;
@@ -206,13 +102,7 @@ void shiftLeft(u8 reg, u8 numOfShifts) {
 }
 
 
-void storeToMemory(u12 position, u8 value) {
-	memory[position] = value;
-}
 
-u8 getFromMemory(u12 position) {
-	return memory[position];
-}
 
 
 void storeRegisters(u12 addr, u4 reg) {
@@ -257,8 +147,8 @@ void runInstruction(u8* instr) {
 					break; 
 
 				case 0x00EE: ;//RET
-					u16 ret = popStack();
-					cpu->pc = ret;
+					/*u16 ret = popStack(&cpu->sp);
+					cpu->pc = ret;*/
 
 					printf("RET\n");
 
@@ -284,7 +174,7 @@ void runInstruction(u8* instr) {
 
 		case 0x2: ; //CALL addr (2nnn)
 		{
-			pushStack(cpu->pc);
+			pushStack(&cpu->sp, cpu->pc);
 			u12 addr = convertBytesToU12(instr);
 			cpu->pc = addr;
 
@@ -567,38 +457,30 @@ void runInstruction(u8* instr) {
 
 void runCPU() {
 	while(cpu->pc < 9) {
-		u8* instr = readNextBytes(INSTRUCTION_SIZE);
+		u8* instr = readNextBytes(&cpu->pc, INSTRUCTION_SIZE);
 		runInstruction(instr);
 		free(instr);
 	}
 }
 
 
-int main(int argc, char* argv[]) {
-	printf("CHIP-8\n");
-
+void initCPU() {
 	cpu = (CPU*) calloc(1, sizeof(CPU));
-	cpu->pc = 0;
-	cpu->sp = 200;
-
-	memory = (u8*) malloc(sizeof(u8) * MEMORY_SIZE);
-	screen = (u8*) calloc(SCREEN_SIZE_BYTES, sizeof(u8));
 
 	srand(time(NULL));
 
-	memory[0] = 0x00;
-	memory[1] = 0xEE;
-	memory[2] = 0x00;
-	memory[3] = 0xEE;
-	memory[4] = 0x00;
-	memory[5] = 0xE0;
-	memory[6] = 0x01;
-	memory[7] = 0x0F;
-	memory[8] = 0xFF;
+	//TODO: colocar valores correctos
+	cpu->pc = 0;
+	cpu->sp = 200;
+}
 
+
+int main(int argc, char* argv[]) {
+	printf("CHIP-8\n");
+
+	initCPU();
+	initMemory();
 	runCPU();
 
 	return 0;
-
-
 }
