@@ -237,352 +237,352 @@ u8 generateRandomNumber() {
 }
 
 
-void runCPU() {
+void runInstruction(u8* instr) {
 
-	while(cpu->pc < 9) {
+	u8 high = instr[0];
+	u8 low = instr[1];
 
-		u8* instr = readNextBytes(INSTRUCTION_SIZE);
-		u8 high = instr[0];
-		u8 low = instr[1];
+	u4 lead = (high >> 4) & 0x0F;
 
-		u4 lead = (high >> 4) & 0x0F;
+	switch(lead) {
+		case 0x0: ;
+		{
+			u12 number = convertBytesToU12(instr);
 
-		switch(lead) {
-			case 0x0: ;
-			{
-				u12 number = convertBytesToU12(instr);
+			switch(number) {
+				case 0x00E0: ;//CLS - clear screen
+					//TODO
+					printf("CLS\n");
 
-				switch(number) {
-					case 0x00E0: ;//CLS - clear screen
-						//TODO
-						printf("CLS\n");
+					break; 
 
-						break; 
+				case 0x00EE: ;//RET
+					u16 ret = popStack();
+					cpu->pc = ret;
 
-					case 0x00EE: ;//RET
-						u16 ret = popStack();
-						cpu->pc = ret;
+					printf("RET\n");
 
-						printf("RET\n");
+					break;
 
-						break;
-
-					default: ;//system call
-						//nop
-						printf("SYS CALL\n");
-				}
-
-
-				break;
-
+				default: ;//system call
+					//nop
+					printf("SYS CALL\n");
 			}
 
-			case 0x1: ; //JUMP addr (1nnn)
-			{
-				u12 addr = convertBytesToU12(instr);
-				cpu->pc = addr;
 
-				break;
-			}
-
-			case 0x2: ; //CALL addr (2nnn)
-			{
-				pushStack(cpu->pc);
-				u12 addr = convertBytesToU12(instr);
-				cpu->pc = addr;
-
-				break;
-			}
-
-			case 0x3: ; //SKIP EQUAL (3xkk)
-			{
-				u4 regIndex = getLowU4(high);
-				u8 regValue = getRegister(regIndex);
-
-				if(regValue == low) {
-					skipNextInstruction();
-				}
-
-				break;
-			}
-
-			case 0x4: ; //SKIP NOT EQUAL (4xkk)
-			{
-				u4 regIndex = getLowU4(high);
-				u8 regValue = getRegister(regIndex);
-
-				if(regValue != low) {
-					skipNextInstruction();
-				}
-
-				break;
-			}
-
-			case 0x5: ; // SKIP EQUAL (5xy0)
-			{
-				u4 firstRegIndex = getLowU4(high);
-				u8 firstRegValue = getRegister(firstRegIndex);
-
-				u4 secondRegIndex = getHighU4(low);
-				u8 secondRegValue = getRegister(secondRegValue);
-
-
-				if(firstRegValue == secondRegValue) {
-					skipNextInstruction();
-				}
-
-
-				break;
-			}
-
-			case 0x6: ; // LOAD (6xkk)
-			{
-				u4 regIndex = getLowU4(high);
-
-				setRegister(regIndex, low);
-
-				break;
-			}
-
-			case 0x7: ; // ADD (7xkk)
-			{
-				u4 regIndex = getLowU4(high);
-				u8 regValue = getRegister(regIndex);
-
-				setRegister(regIndex, regValue + low);
-
-				break;
-			}
-
-			case 0x8: ; // (8xyk)
-			{
-				u4 firstRegIndex = getLowU4(high);
-				u8 firstRegValue = getRegister(firstRegIndex);
-
-				u4 secondRegIndex = getHighU4(low);
-				u8 secondRegValue = getRegister(secondRegValue);
-
-
-				u4 op = getLowU4(low);
-
-				switch(op) {
-
-					case 0x0: ; // LOAD
-
-						setRegister(firstRegIndex, secondRegValue);
-						break;
-
-					case 0x1: ; // OR
-
-						setRegister(firstRegIndex, firstRegValue | secondRegValue);
-						break;
-
-					case 0x2: ; // AND
-
-						setRegister(firstRegIndex, firstRegValue & secondRegValue);
-						break;
-
-					case 0x3: ; // XOR
-
-						setRegister(firstRegIndex, firstRegValue ^ secondRegValue);
-						break;
-
-					case 0x4: ; // ADD
-
-						addRegisters(firstRegIndex, secondRegIndex);
-						break;
-
-					case 0x5: ; // SUB (x-y)
-
-						subtractRegisters(firstRegIndex, firstRegIndex, secondRegIndex);
-						break;
-
-					case 0x6: ; // SHR 1
-
-						shiftRight(firstRegIndex, 1);
-						break;
-
-					case 0x7: ; // SUBN (y-x)
-
-						subtractRegisters(firstRegIndex, secondRegIndex, firstRegIndex);
-						break;
-
-					case 0xE: ; // SHL 1
-
-						shiftLeft(firstRegIndex, 1);
-						break;
-
-					default: ; //invalid op
-
-						printf("[ERROR] Invalid op for instruction 0x8xxx\n");
-
-				}
-
-				break;
-			}
-
-			case 0x9: ; // SKIP NOT EQUAL (9xy0)
-			{
-				u4 firstRegIndex = getLowU4(high);
-				u8 firstRegValue = getRegister(firstRegIndex);
-
-				u4 secondRegIndex = getHighU4(low);
-				u8 secondRegValue = getRegister(secondRegValue);
-
-
-				if(firstRegValue != secondRegValue) {
-					skipNextInstruction();
-				}
-
-				break;
-			}
-
-			case 0xA: ; // LOAD I, addr (Annn)
-			{
-				u12 addr = convertBytesToU12(instr);
-				cpu->I = addr;
-
-				break;
-			}
-
-			case 0xB: ; // JUMP V0 + nnn (Bnnn)
-			{
-				u12 addr = convertBytesToU12(instr);
-				u16 newAddr = addr + getRegister(0);
-				cpu->pc = newAddr;
-
-				break;
-			}
-
-			case 0xC: ; // Vx = random byte AND kk (Cxkk)
-			{
-				u8 rnd = 0; //TODO
-				u4 regIndex = getLowU4(high);
-				setRegister(regIndex, rnd & low);
-
-				break;
-			}
-
-			case 0xD: ; // Display TODO
-			{
-				break;
-			}
-
-			case 0xE: ; // Input
-			{
-				u4 regIndex = getLowU4(high);
-
-				switch(low) {
-					case 0x9E: ; // SKIP if Vx is pressed
-					{
-						//TODO
-
-						break;
-					}
-
-					case 0xA1: ; //SKIP if Vx is not pressed
-					{
-						//TODO
-
-						break;
-					}
-
-					default: ; //invalid input op
-						printf("[ERROR] Invalid op for instruction 0xExxx\n");
-				}
-
-				break;
-			}
-
-			case 0xF: ; // Fxkk
-			{
-				u4 reg = getLowU4(high);
-
-				switch(low) {
-					case 0x07: ; // LOAD Vx, DT
-					{
-						setRegister(reg, cpu->dt);
-						break;
-					}
-
-					case 0x0A: ; // LOAD Vx, K
-					{
-						//TODO
-						break;
-					}
-
-					case 0x15: ; // LOAD DT, Vx
-					{
-						cpu->dt = getRegister(reg);
-						break;
-					}
-
-					case 0x18: ; // LOAD ST, Vx
-					{
-						cpu->st = getRegister(reg);
-						break;
-					}
-
-					case 0x1E: ; // ADD I, Vx
-					{
-						u16 result = cpu->I + getRegister(reg);
-						cpu->I = result;
-						break;
-					}
-
-					case 0x33: ; // LD B, Vx
-					{
-						u8 regValue = getRegister(reg);
-						u8 hundreads = regValue / 100;
-						u8 tens = regValue / 10;
-						u8 units = regValue % 10;
-
-						u12 I = cpu->I;
-						storeToMemory(I, hundreads);
-						storeToMemory(I+1, tens);
-						storeToMemory(I+2, units);
-
-						break;
-					}
-
-					case 0x55: ; // LD [I], Vx
-					{
-						storeRegisters(cpu->I, reg);
-						break;
-					}
-
-					case 0x65: ; // LD Vx, [I]
-					{
-						loadRegisters(cpu->I, reg);
-						break;
-					}
-				}
-
-				break;
-			}
-
-			default: printf("invalid op: %d\n", instr);
-
+			break;
 
 		}
 
-		free(instr);
+		case 0x1: ; //JUMP addr (1nnn)
+		{
+			u12 addr = convertBytesToU12(instr);
+			cpu->pc = addr;
 
+			break;
+		}
+
+		case 0x2: ; //CALL addr (2nnn)
+		{
+			pushStack(cpu->pc);
+			u12 addr = convertBytesToU12(instr);
+			cpu->pc = addr;
+
+			break;
+		}
+
+		case 0x3: ; //SKIP EQUAL (3xkk)
+		{
+			u4 regIndex = getLowU4(high);
+			u8 regValue = getRegister(regIndex);
+
+			if(regValue == low) {
+				skipNextInstruction();
+			}
+
+			break;
+		}
+
+		case 0x4: ; //SKIP NOT EQUAL (4xkk)
+		{
+			u4 regIndex = getLowU4(high);
+			u8 regValue = getRegister(regIndex);
+
+			if(regValue != low) {
+				skipNextInstruction();
+			}
+
+			break;
+		}
+
+		case 0x5: ; // SKIP EQUAL (5xy0)
+		{
+			u4 firstRegIndex = getLowU4(high);
+			u8 firstRegValue = getRegister(firstRegIndex);
+
+			u4 secondRegIndex = getHighU4(low);
+			u8 secondRegValue = getRegister(secondRegValue);
+
+
+			if(firstRegValue == secondRegValue) {
+				skipNextInstruction();
+			}
+
+
+			break;
+		}
+
+		case 0x6: ; // LOAD (6xkk)
+		{
+			u4 regIndex = getLowU4(high);
+
+			setRegister(regIndex, low);
+
+			break;
+		}
+
+		case 0x7: ; // ADD (7xkk)
+		{
+			u4 regIndex = getLowU4(high);
+			u8 regValue = getRegister(regIndex);
+
+			setRegister(regIndex, regValue + low);
+
+			break;
+		}
+
+		case 0x8: ; // (8xyk)
+		{
+			u4 firstRegIndex = getLowU4(high);
+			u8 firstRegValue = getRegister(firstRegIndex);
+
+			u4 secondRegIndex = getHighU4(low);
+			u8 secondRegValue = getRegister(secondRegValue);
+
+
+			u4 op = getLowU4(low);
+
+			switch(op) {
+
+				case 0x0: ; // LOAD
+
+					setRegister(firstRegIndex, secondRegValue);
+					break;
+
+				case 0x1: ; // OR
+
+					setRegister(firstRegIndex, firstRegValue | secondRegValue);
+					break;
+
+				case 0x2: ; // AND
+
+					setRegister(firstRegIndex, firstRegValue & secondRegValue);
+					break;
+
+				case 0x3: ; // XOR
+
+					setRegister(firstRegIndex, firstRegValue ^ secondRegValue);
+					break;
+
+				case 0x4: ; // ADD
+
+					addRegisters(firstRegIndex, secondRegIndex);
+					break;
+
+				case 0x5: ; // SUB (x-y)
+
+					subtractRegisters(firstRegIndex, firstRegIndex, secondRegIndex);
+					break;
+
+				case 0x6: ; // SHR 1
+
+					shiftRight(firstRegIndex, 1);
+					break;
+
+				case 0x7: ; // SUBN (y-x)
+
+					subtractRegisters(firstRegIndex, secondRegIndex, firstRegIndex);
+					break;
+
+				case 0xE: ; // SHL 1
+
+					shiftLeft(firstRegIndex, 1);
+					break;
+
+				default: ; //invalid op
+
+					printf("[ERROR] Invalid op for instruction 0x8xxx\n");
+
+			}
+
+			break;
+		}
+
+		case 0x9: ; // SKIP NOT EQUAL (9xy0)
+		{
+			u4 firstRegIndex = getLowU4(high);
+			u8 firstRegValue = getRegister(firstRegIndex);
+
+			u4 secondRegIndex = getHighU4(low);
+			u8 secondRegValue = getRegister(secondRegValue);
+
+
+			if(firstRegValue != secondRegValue) {
+				skipNextInstruction();
+			}
+
+			break;
+		}
+
+		case 0xA: ; // LOAD I, addr (Annn)
+		{
+			u12 addr = convertBytesToU12(instr);
+			cpu->I = addr;
+
+			break;
+		}
+
+		case 0xB: ; // JUMP V0 + nnn (Bnnn)
+		{
+			u12 addr = convertBytesToU12(instr);
+			u16 newAddr = addr + getRegister(0);
+			cpu->pc = newAddr;
+
+			break;
+		}
+
+		case 0xC: ; // Vx = random byte AND kk (Cxkk)
+		{
+			u8 rnd = 0; //TODO
+			u4 regIndex = getLowU4(high);
+			setRegister(regIndex, rnd & low);
+
+			break;
+		}
+
+		case 0xD: ; // Display TODO
+		{
+			break;
+		}
+
+		case 0xE: ; // Input
+		{
+			u4 regIndex = getLowU4(high);
+
+			switch(low) {
+				case 0x9E: ; // SKIP if Vx is pressed
+				{
+					//TODO
+
+					break;
+				}
+
+				case 0xA1: ; //SKIP if Vx is not pressed
+				{
+					//TODO
+
+					break;
+				}
+
+				default: ; //invalid input op
+					printf("[ERROR] Invalid op for instruction 0xExxx\n");
+			}
+
+			break;
+		}
+
+		case 0xF: ; // Fxkk
+		{
+			u4 reg = getLowU4(high);
+
+			switch(low) {
+				case 0x07: ; // LOAD Vx, DT
+				{
+					setRegister(reg, cpu->dt);
+					break;
+				}
+
+				case 0x0A: ; // LOAD Vx, K
+				{
+					//TODO
+					break;
+				}
+
+				case 0x15: ; // LOAD DT, Vx
+				{
+					cpu->dt = getRegister(reg);
+					break;
+				}
+
+				case 0x18: ; // LOAD ST, Vx
+				{
+					cpu->st = getRegister(reg);
+					break;
+				}
+
+				case 0x1E: ; // ADD I, Vx
+				{
+					u16 result = cpu->I + getRegister(reg);
+					cpu->I = result;
+					break;
+				}
+
+				case 0x33: ; // LD B, Vx
+				{
+					u8 regValue = getRegister(reg);
+					u8 hundreads = regValue / 100;
+					u8 tens = regValue / 10;
+					u8 units = regValue % 10;
+
+					u12 I = cpu->I;
+					storeToMemory(I, hundreads);
+					storeToMemory(I+1, tens);
+					storeToMemory(I+2, units);
+
+					break;
+				}
+
+				case 0x55: ; // LD [I], Vx
+				{
+					storeRegisters(cpu->I, reg);
+					break;
+				}
+
+				case 0x65: ; // LD Vx, [I]
+				{
+					loadRegisters(cpu->I, reg);
+					break;
+				}
+			}
+
+			break;
+		}
+
+		default: printf("invalid op: %d\n", instr);
 	}
+}
 
 
+
+
+void runCPU() {
+	while(cpu->pc < 9) {
+		u8* instr = readNextBytes(INSTRUCTION_SIZE);
+		runInstruction(instr);
+		free(instr);
+	}
 }
 
 
 int main(int argc, char* argv[]) {
 	printf("CHIP-8\n");
 
-	cpu = (CPU*) malloc(sizeof(CPU));
+	cpu = (CPU*) calloc(1, sizeof(CPU));
 	cpu->pc = 0;
 	cpu->sp = 200;
 
 	memory = (u8*) malloc(sizeof(u8) * MEMORY_SIZE);
-	screen = (u8*) malloc(sizeof(u8) * SCREEN_SIZE_BYTES);
+	screen = (u8*) calloc(SCREEN_SIZE_BYTES, sizeof(u8));
 
 	srand(time(NULL));
 
@@ -597,8 +597,6 @@ int main(int argc, char* argv[]) {
 	memory[8] = 0xFF;
 
 	runCPU();
-
-	printf("skipNext: %d\n", sizeof(u8) * MEMORY_SIZE);
 
 	return 0;
 
