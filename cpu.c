@@ -140,13 +140,13 @@ void runInstruction(u8* instr) {
 			u12 number = convertBytesToU12(instr);
 
 			switch(number) {
-				case 0x00E0: ;//CLS - clear screen
+				case 0x00E0: ; //CLS - clear screen
 					//TODO
 					printf("CLS\n");
 
 					break; 
 
-				case 0x00EE: ;//RET
+				case 0x00EE: ; //RET
 					/*u16 ret = popStack(&cpu->sp);
 					cpu->pc = ret;*/
 
@@ -154,7 +154,7 @@ void runInstruction(u8* instr) {
 
 					break;
 
-				default: ;//system call
+				default: ; //system call
 					//nop
 					printf("SYS CALL\n");
 			}

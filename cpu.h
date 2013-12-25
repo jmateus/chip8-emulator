@@ -18,7 +18,6 @@ typedef struct {
 
 	u16 pc; // program counter
 	u8 sp; // stack pointer
-
 } CPU;
 
 
