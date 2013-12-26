@@ -55,7 +55,7 @@ u32 convertBytesToU32(u8* bytes, u16 max) {
 
 	int i;
 	for(i = 0; i < max; i++) {
-		number = (number << 8*i) & 0xFFFFFF00;
+		number = (number << 8) & 0xFFFFFF00;
 		number += bytes[i];
 	}
 
@@ -109,4 +109,9 @@ void initMemory() {
 	memory[6] = 0x01;
 	memory[7] = 0x0F;
 	memory[8] = 0xFF;
+}
+
+void setMemory(u8* newMemory) {
+	free(memory);
+	memory = newMemory;
 }
