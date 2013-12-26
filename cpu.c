@@ -36,6 +36,18 @@ u8 setFlag(u8 value) {
 	return oldValue;
 }
 
+u8 getFlag() {
+	return getRegister(FLAG_REGISTER_INDEX);
+}
+
+void setRegisterI(u16 value) {
+	cpu->I = value;
+}
+
+u16 getRegisterI() {
+	return cpu->I;
+}
+
 
 void addRegisters(u4 x, u4 y){
 	u8 xValue = getRegister(x);
@@ -103,8 +115,6 @@ void shiftLeft(u8 reg, u8 numOfShifts) {
 
 
 
-
-
 void storeRegisters(u12 addr, u4 reg) {
 	int i;
 	for(i = 0; i <= reg; i++) {
@@ -121,8 +131,8 @@ void loadRegisters(u12 addr, u4 reg) {
 	}
 }
 
-u8 generateRandomNumber() {
-	u8 rnd = rand() % 256;
+u8 generateRandomNumber(int maxValue) {
+	u8 rnd = rand() % maxValue;
 	return rnd;
 }
 
@@ -343,7 +353,7 @@ void runInstruction(u8* instr) {
 
 		case 0xC: ; // Vx = random byte AND kk (Cxkk)
 		{
-			u8 rnd = 0; //TODO
+			u8 rnd = generateRandomNumber(MAX_RANDOM_VALUE);
 			u4 regIndex = getLowU4(high);
 			setRegister(regIndex, rnd & low);
 
@@ -469,18 +479,20 @@ void initCPU() {
 
 	srand(time(NULL));
 
+	initMemory();
+
 	//TODO: colocar valores correctos
 	cpu->pc = 0;
 	cpu->sp = 200;
 }
 
 
-int main(int argc, char* argv[]) {
+/*int main(int argc, char* argv[]) {
 	printf("CHIP-8\n");
 
 	initCPU();
-	initMemory();
+	
 	runCPU();
 
 	return 0;
-}
+}*/

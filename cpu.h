@@ -8,6 +8,7 @@
 #define REGISTER_MAX_VALUE 255
 #define FLAG_REGISTER_INDEX 0xF
 #define INSTRUCTION_SIZE 2
+#define MAX_RANDOM_VALUE 256
 
 typedef struct {
 	u8 registers[NUMBER_OF_REGISTERS]; //V0, V1,..., VE, VF
@@ -25,6 +26,10 @@ void setRegister(u4 regist, u8 value);
 u8 getRegister(u4 regist);
 
 u8 setFlag(u8 value);
+u8 getFlag();
+
+void setRegisterI(u16 value);
+u16 getRegisterI();
 
 void runInstruction(u8* instr);
 void skipNextInstruction();
@@ -38,7 +43,7 @@ void shiftLeft(u8 reg, u8 numOfShifts);
 void storeRegisters(u12 addr, u4 reg);
 void loadRegisters(u12 addr, u4 reg);
 
-u8 generateRandomNumber();
+u8 generateRandomNumber(int maxValue);
 
 void runCPU();
 void initCPU();
