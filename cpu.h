@@ -45,6 +45,8 @@ void loadRegisters(u12 addr, u4 reg);
 
 u8 generateRandomNumber(int maxValue);
 
+CPU* getCPU();
+
 void runCPU();
 void initCPU();
 

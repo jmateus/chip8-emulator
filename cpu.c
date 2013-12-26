@@ -136,6 +136,10 @@ u8 generateRandomNumber(int maxValue) {
 	return rnd;
 }
 
+CPU* getCPU() {
+	return cpu;
+}
+
 
 void runInstruction(u8* instr) {
 
@@ -157,8 +161,8 @@ void runInstruction(u8* instr) {
 					break; 
 
 				case 0x00EE: ; //RET
-					/*u16 ret = popStack(&cpu->sp);
-					cpu->pc = ret;*/
+					u16 ret = popStack(&cpu->sp);
+					cpu->pc = ret;
 
 					printf("RET\n");
 
@@ -221,13 +225,11 @@ void runInstruction(u8* instr) {
 			u8 firstRegValue = getRegister(firstRegIndex);
 
 			u4 secondRegIndex = getHighU4(low);
-			u8 secondRegValue = getRegister(secondRegValue);
-
+			u8 secondRegValue = getRegister(secondRegIndex);
 
 			if(firstRegValue == secondRegValue) {
 				skipNextInstruction();
 			}
-
 
 			break;
 		}
@@ -257,7 +259,7 @@ void runInstruction(u8* instr) {
 			u8 firstRegValue = getRegister(firstRegIndex);
 
 			u4 secondRegIndex = getHighU4(low);
-			u8 secondRegValue = getRegister(secondRegValue);
+			u8 secondRegValue = getRegister(secondRegIndex);
 
 
 			u4 op = getLowU4(low);
@@ -324,7 +326,7 @@ void runInstruction(u8* instr) {
 			u8 firstRegValue = getRegister(firstRegIndex);
 
 			u4 secondRegIndex = getHighU4(low);
-			u8 secondRegValue = getRegister(secondRegValue);
+			u8 secondRegValue = getRegister(secondRegIndex);
 
 
 			if(firstRegValue != secondRegValue) {
@@ -427,11 +429,17 @@ void runInstruction(u8* instr) {
 					break;
 				}
 
+				case 0x29: ; // LD F, Vx
+				{
+					//TODO
+					break;
+				}
+
 				case 0x33: ; // LD B, Vx
 				{
 					u8 regValue = getRegister(reg);
 					u8 hundreads = regValue / 100;
-					u8 tens = regValue / 10;
+					u8 tens = (regValue % 100) / 10;
 					u8 units = regValue % 10;
 
 					u12 I = cpu->I;
@@ -481,7 +489,6 @@ void initCPU() {
 
 	initMemory();
 
-	//TODO: colocar valores correctos
 	cpu->pc = 0;
-	cpu->sp = 200;
+	cpu->sp = 0;
 }

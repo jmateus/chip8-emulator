@@ -112,9 +112,9 @@ void setupSuite() {
 	}
 
 
-// Helper macro to statically initialize an array. 
-// If it isn't used, the macro will interpret the elements of the array as arguments, throwing an error during compilation.
+// Helper macro to statically initialize an array, structure or union. 
+// If it isn't used, the macro will interpret the elements as arguments, throwing an error during compilation.
 // source: http://stackoverflow.com/questions/5503362/passing-array-literal-as-macro-argument
-#define ARRAY_INIT(...) __VA_ARGS__ 
+#define STATIC_INIT(...) __VA_ARGS__ 
 
 #endif

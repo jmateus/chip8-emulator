@@ -33,7 +33,7 @@ BEGIN_SUITE("Stack operations",
 
 BEGIN_SUITE("Convert operations",
 
-	u8 number[] = ARRAY_INIT({ 0xaa, 0xbb, 0xcc, 0xdd });
+	u8 number[] = STATIC_INIT({ 0xaa, 0xbb, 0xcc, 0xdd });
 
 	mu_assert("u32 should be 0xaabbccdd", convertBytesToU32(number, 4) == 0xAABBCCDD );
 	mu_assert("u12 should be 0xbbccdd", convertBytesToU12(number) == 0xABB );
