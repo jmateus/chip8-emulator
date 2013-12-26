@@ -3,9 +3,11 @@ CFLAGS =
 EXECUTABLE = main
 SOURCES = main.c cpu.c memory.c
 OBJS = $(SOURCES:.c=.o)
-HEADERS_MK = .headers
+HEADERS_MK = ./.headers
 
-all: $(OBJS)
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJS)
 	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(OBJS)
 
 .c.o:
@@ -16,5 +18,7 @@ clean:
 
 $(HEADERS_MK): $(SOURCES)
 	$(CC) $(CFLAGS) -MM $^ >> $(HEADERS_MK)
+
+.PHONY: all clean
 
 include $(HEADERS_MK)
