@@ -1,5 +1,8 @@
 *.exe
+*.o
 
+/Programs
+
+.headers
 SDL2.dll
 sdl2-config
-/Programs

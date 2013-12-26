@@ -485,14 +485,3 @@ void initCPU() {
 	cpu->pc = 0;
 	cpu->sp = 200;
 }
-
-
-/*int main(int argc, char* argv[]) {
-	printf("CHIP-8\n");
-
-	initCPU();
-	
-	runCPU();
-
-	return 0;
-}*/
