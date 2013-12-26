@@ -9,12 +9,7 @@
 #include "memory.h"
 
 
-#define SCREEN_SIZE_BYTES 256
-#define SCREEN_WIDTH 64
-#define SCREEN_HEIGHT 32
-
-
-static CPU* cpu;
+static CPU *cpu;
 
 
 void setRegister(u4 regist, u8 value) {
@@ -486,9 +481,4 @@ void initCPU() {
 	cpu = (CPU*) calloc(1, sizeof(CPU));
 
 	srand(time(NULL));
-
-	initMemory();
-
-	cpu->pc = 0;
-	cpu->sp = 0;
 }
