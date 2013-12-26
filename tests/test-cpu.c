@@ -24,7 +24,7 @@ BEGIN_SUITE("Registers",
 );
 
 
-BEGIN_SUITE("Arithmetic ops with registers",
+BEGIN_SUITE("Add registers",
 
 	setRegister(0xA, 100);
 	setRegister(0xB, 155);
@@ -40,9 +40,23 @@ BEGIN_SUITE("Arithmetic ops with registers",
 	mu_assert("should overflow addition correctly", getRegister(0xA) == 1);
 	mu_assert("should set flag to 1", getFlag() == 1);
 
+);
 
-	//TODO: subtraction
+BEGIN_SUITE("Subtract registers",
 
+	setRegister(0xA, 200);
+	setRegister(0xB, 73);
+	subtractRegisters(0xC, 0xA, 0xB);
+
+	mu_assert("should subtract registers correctly when it doesn't overflow", getRegister(0xC) == 127);
+	mu_assert("should set flag to 1", getFlag() == 1);
+
+	setRegister(0xA, 5);
+	setRegister(0xB, 6);
+	subtractRegisters(0xC, 0xA, 0xB);
+
+	mu_assert("should subtract registers correctly when it overflows", getRegister(0xC) == 255);
+	mu_assert("should set flag to 0", getFlag() == 0);
 );
 
 

@@ -28,9 +28,9 @@ u8* readNextBytes(u16* counter, u16 numberBytes) {
 u16 popStack(u8* stack) {
 	u16 top = 0;
 
-	top += memory[*stack-2];
+	top += memory[STACK_OFFSET + (*stack-2)];
 	top = (top << 8) & 0xFF00;
-	top += memory[*stack-1];
+	top += memory[STACK_OFFSET + (*stack-1)];
 
 	*stack -= 2;
 
@@ -42,8 +42,8 @@ void pushStack(u8* stack, u16 value) {
 	u8 high = (value >> 8) & 0x00FF;
 	u8 low = value & 0x00FF;
 
-	memory[*stack] = high;
-	memory[*stack + 1] = low;
+	memory[STACK_OFFSET + (*stack)] = high;
+	memory[STACK_OFFSET + (*stack + 1)] = low;
 
 	*stack += 2;
 }
