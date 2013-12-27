@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = 
-EXECUTABLE = main
+EXECUTABLE = chip8
 SOURCES = memory.c graphics.c input.c cpu.c main.c
 OBJS = $(SOURCES:.c=.o)
 LIBS = -lmingw32 -lSDL2main -lSDL2
