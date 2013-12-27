@@ -173,21 +173,16 @@ void runInstruction(u8* instr) {
 
 					clearScreen();
 
-					printf("CLS\n");
-
 					break; 
 
 				case 0x00EE: ; //RET
 					u16 ret = popStack(&cpu->sp);
 					cpu->pc = ret;
 
-					//printf("RET\n");
-
 					break;
 
 				default: ; //system call
 					//nop
-					//printf("SYS CALL\n");
 			}
 
 
@@ -518,7 +513,7 @@ void runInstruction(u8* instr) {
 			break;
 		}
 
-		default: printf("invalid op: %d\n", instr);
+		default: printf("[ERROR] Invalid op: %X%X\n", high, low);
 	}
 }
 
@@ -529,7 +524,7 @@ void runCPU() {
 
 	while(isWindowOpen()) {
 		u8* instr = readNextBytes(&cpu->pc, INSTRUCTION_SIZE);
-		
+
 		runInstruction(instr);
 		free(instr);
 
