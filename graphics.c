@@ -109,7 +109,26 @@ void drawSprite(u8 *sprite, u4 x, u4 y, u4 size) {
 	}
 
 	SDL_UnlockSurface(screen->surface);
+
 	SDL_UpdateWindowSurface(screen->window);
+}
+
+
+bool pixelCollision() {
+	return screen->collision;
+}
+
+
+bool isWindowOpen() {
+	SDL_Event evt;
+
+	SDL_PollEvent(&evt);
+	if(evt.type == SDL_QUIT) {
+		return false;
+	}
+	else {
+		return true;
+	}
 }
 
 
@@ -144,17 +163,7 @@ void initScreen() {
 
 void initGraphics() {
 
-	SDL_Init(SDL_INIT_EVERYTHING);
+	SDL_Init(SDL_INIT_EVERYTHING); //TODO: init only video
 	initScreen();
-
-	/*drawSprite(CHIP8_DEFAULT_CHARSET[0xF], 20, 20, 5);
-	updateScreen();
-
-	SDL_Delay(2000);
-
-	drawSprite(CHIP8_DEFAULT_CHARSET[0xF], 20, 20, 5);
-	updateScreen();*/
-
-	//SDL_Delay(2000);
 
 }

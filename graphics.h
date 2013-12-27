@@ -41,6 +41,9 @@ void updateScreen();
 void drawLine(u8 line, u4 x, u4 y);
 void drawSprite(u8 *sprite, u4 x, u4 y, u4 size);
 
+bool pixelCollision();
+bool isWindowOpen();
+
 void initScreen();
 void initGraphics();
 
