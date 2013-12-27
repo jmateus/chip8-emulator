@@ -1,7 +1,9 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "memory.h"
-
+#include "charset.h"
 
 static u8* memory;
 
@@ -97,8 +99,55 @@ u8 getFromMemory(u12 position) {
 }
 
 
+//TODO: untested
+u8* getMemory(u12 position) {
+	return &memory[position];
+}
+
+//TODO: untested
+void setMemory(u8* newMemory) {
+	free(memory);
+	memory = newMemory;
+}
+
+
+//TODO: untested
+void loadData(u8* data, u12 size, u12 position) {
+	memcpy(&memory[position], data, size);
+}
+
+
+//TODO: untested
+int loadProgram(char* filename) {
+	FILE* file = fopen(filename, "rb");
+
+	if(file != NULL) {
+		int i;
+		for(i = 0; i < MEMORY_SIZE && !feof(file); i++) {
+			fread(&memory[PROGRAM_OFFSET + i], sizeof(u8), 1, file);
+		}
+
+		return i;
+	}
+
+	return 0;
+}
+
+
+//TODO: untested
+void loadDefaultCharset(u8* charset, u12 size) {
+	loadData(charset, size, CHARSET_OFFSET);
+}
+
+
+//TODO: untested
+u12 getCharLocation(u4 character) {
+	return CHARSET_OFFSET + (character * DEFAULT_CHARS_SIZE);
+}
+
+
 void initMemory() {
-	memory = (u8*) malloc(sizeof(u8) * MEMORY_SIZE);
+	memory = (u8*) calloc(1, sizeof(u8) * MEMORY_SIZE);
 
 	memory[0] = 0x00;
 	memory[1] = 0xEE;
@@ -109,9 +158,4 @@ void initMemory() {
 	memory[6] = 0x01;
 	memory[7] = 0x0F;
 	memory[8] = 0xFF;
-}
-
-void setMemory(u8* newMemory) {
-	free(memory);
-	memory = newMemory;
 }

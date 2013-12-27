@@ -7,6 +7,7 @@
 #include "cpu.h"
 #include "types.h"
 #include "memory.h"
+#include "graphics.h"
 
 
 static CPU *cpu;
@@ -131,6 +132,21 @@ u8 generateRandomNumber(int maxValue) {
 	return rnd;
 }
 
+
+void updateTimers() {
+	clock_t currTime = clock();
+	float currTimeMillis = (((float)currTime)/CLOCKS_PER_SEC) * 1000;
+
+	if((currTimeMillis - cpu->lastUpdate) > TIMER_UPDATE_INTERVAL_MILLIS) {
+		cpu->dt = cpu->dt == 0 ? 0 : cpu->dt - 1;
+		cpu->st = cpu->st == 0 ? 0 : cpu->st - 1;
+		cpu->lastUpdate = currTimeMillis;
+
+		//printf("update timers\n");
+	}
+}
+
+
 CPU* getCPU() {
 	return cpu;
 }
@@ -141,7 +157,7 @@ void runInstruction(u8* instr) {
 	u8 high = instr[0];
 	u8 low = instr[1];
 
-	u4 lead = (high >> 4) & 0x0F;
+	u4 lead = getHighU4(high);
 
 	switch(lead) {
 		case 0x0: ;
@@ -149,9 +165,12 @@ void runInstruction(u8* instr) {
 			u12 number = convertBytesToU12(instr);
 
 			switch(number) {
-				case 0x00E0: ; //CLS - clear screen
-					//TODO
-					printf("CLS\n");
+				case 0x00E0: ; //CLS (00E0)
+					//TODO: test
+
+					clearScreen();
+
+					//printf("CLS\n");
 
 					break; 
 
@@ -159,13 +178,13 @@ void runInstruction(u8* instr) {
 					u16 ret = popStack(&cpu->sp);
 					cpu->pc = ret;
 
-					printf("RET\n");
+					//printf("RET\n");
 
 					break;
 
 				default: ; //system call
 					//nop
-					printf("SYS CALL\n");
+					//printf("SYS CALL\n");
 			}
 
 
@@ -357,8 +376,21 @@ void runInstruction(u8* instr) {
 			break;
 		}
 
-		case 0xD: ; // Display TODO
+		case 0xD: ; // Draw Vx, Vy, n (Dxyn)
 		{
+			u12 spriteLocation = getRegisterI();
+			u8* sprite = getMemory(spriteLocation);
+
+			u4 firstRegIndex = getLowU4(high);
+			u8 xCoord = getRegister(firstRegIndex);
+
+			u4 secondRegIndex = getHighU4(low);
+			u8 yCoord = getRegister(secondRegIndex);
+
+			u4 spriteSize = getLowU4(low);
+
+			drawSprite(sprite, xCoord, yCoord, spriteSize);
+
 			break;
 		}
 
@@ -402,6 +434,11 @@ void runInstruction(u8* instr) {
 				case 0x0A: ; // LOAD Vx, K
 				{
 					//TODO
+
+					printf("Waiting input...\n");
+
+					SDL_Delay(2000);
+
 					break;
 				}
 
@@ -426,7 +463,13 @@ void runInstruction(u8* instr) {
 
 				case 0x29: ; // LD F, Vx
 				{
-					//TODO
+					//TODO: test
+
+					u4 character = getRegister(reg);
+					u12 charLocation = getCharLocation(character);
+
+					setRegisterI(charLocation);
+
 					break;
 				}
 
@@ -467,18 +510,34 @@ void runInstruction(u8* instr) {
 
 
 
-
+//TODO
 void runCPU() {
-	while(cpu->pc < 9) {
+
+	SDL_Event evt;
+
+	while(true) {
 		u8* instr = readNextBytes(&cpu->pc, INSTRUCTION_SIZE);
+
+		//printf("Instruction: %X%X\n", instr[0], instr[1]);
+
 		runInstruction(instr);
 		free(instr);
+
+		updateTimers();
+		SDL_Delay(CPU_INTERVAL_BETWEEN_OPS_MILLIS);
+
+		SDL_PollEvent(&evt);
+  		if(evt.type == SDL_QUIT)
+    		break;
 	}
 }
 
 
 void initCPU() {
 	cpu = (CPU*) calloc(1, sizeof(CPU));
+	cpu->pc = PROGRAM_OFFSET;
+
+	loadDefaultCharset((u8*) CHIP8_DEFAULT_CHARSET, DEFAULT_CHARSET_SIZE);
 
 	srand(time(NULL));
 }

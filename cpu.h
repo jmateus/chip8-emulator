@@ -4,18 +4,22 @@
 #include "types.h"
 
 #define NUMBER_OF_REGISTERS 16
-#define CPU_FREQ 60
+#define CPU_FREQ_HZ 1000
+#define CPU_INTERVAL_BETWEEN_OPS_MILLIS (1000.0/CPU_FREQ_HZ)
+#define TIMER_UPDATES_PER_SECOND 60
+#define TIMER_UPDATE_INTERVAL_MILLIS (1000.0/TIMER_UPDATES_PER_SECOND)
 #define REGISTER_MAX_VALUE 255
 #define FLAG_REGISTER_INDEX 0xF
 #define INSTRUCTION_SIZE 2
 #define MAX_RANDOM_VALUE 256
 
 typedef struct {
-	u8 registers[NUMBER_OF_REGISTERS]; //V0, V1,..., VE, VF
-	u16 I; //registo I
+	u8 registers[NUMBER_OF_REGISTERS]; // V0, V1,..., VE, VF
+	u16 I; // registo I
 
 	u8 dt; // delay timer
-	u8 st; //sound timer
+	u8 st; // sound timer
+	float lastUpdate; // last time the timers were updated
 
 	u16 pc; // program counter
 	u8 sp; // stack pointer

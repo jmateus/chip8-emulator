@@ -4,8 +4,9 @@
 #include "types.h"
 
 #define MEMORY_SIZE 4096
-#define PROGRAM_OFFSET 0x200
-#define STACK_OFFSET 0
+#define PROGRAM_OFFSET 0x0200
+#define STACK_OFFSET 0x0100
+#define CHARSET_OFFSET 0x0000
 
 u8 readNextByte(u16* counter);
 u8* readNextBytes(u16* counter, u16 numberBytes);
@@ -21,5 +22,14 @@ u4 getLowU4(u8 number);
 
 void storeToMemory(u12 position, u8 value);
 u8 getFromMemory(u12 position);
+
+u8* getMemory(u12 position);
+void setMemory(u8* newMemory);
+
+void loadData(u8* data, u12 size, u12 position);
+int loadProgram(char* filename);
+
+void loadDefaultCharset(u8* charset, u12 size);
+u12 getCharLocation(u4 character);
 
 #endif

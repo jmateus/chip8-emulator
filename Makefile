@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = 
 EXECUTABLE = main
-SOURCES = main.c cpu.c memory.c graphics.c
+SOURCES = memory.c graphics.c cpu.c main.c
 OBJS = $(SOURCES:.c=.o)
 LIBS = -lmingw32 -lSDL2main -lSDL2
 HEADERS_MK = ./.headers
