@@ -148,14 +148,4 @@ u12 getCharLocation(u4 character) {
 
 void initMemory() {
 	memory = (u8*) calloc(1, sizeof(u8) * MEMORY_SIZE);
-
-	memory[0] = 0x00;
-	memory[1] = 0xEE;
-	memory[2] = 0x00;
-	memory[3] = 0xEE;
-	memory[4] = 0x00;
-	memory[5] = 0xE0;
-	memory[6] = 0x01;
-	memory[7] = 0x0F;
-	memory[8] = 0xFF;
 }

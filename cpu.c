@@ -8,6 +8,9 @@
 #include "types.h"
 #include "memory.h"
 #include "graphics.h"
+#include "input.h"
+
+#include "SDL2/SDL.h"
 
 
 static CPU *cpu;
@@ -170,7 +173,7 @@ void runInstruction(u8* instr) {
 
 					clearScreen();
 
-					//printf("CLS\n");
+					printf("CLS\n");
 
 					break; 
 
@@ -391,24 +394,36 @@ void runInstruction(u8* instr) {
 
 			drawSprite(sprite, xCoord, yCoord, spriteSize);
 
+			if(pixelCollision()) {
+				setFlag(1);
+			}
+			else {
+				setFlag(0);
+			}
+
 			break;
 		}
 
-		case 0xE: ; // Input
+		case 0xE: ; // Input - TODO: test
 		{
 			u4 regIndex = getLowU4(high);
+			u8 key = getRegister(regIndex);
 
 			switch(low) {
-				case 0x9E: ; // SKIP if Vx is pressed
+				case 0x9E: ; // SKIP if Vx is pressed (Ex9E)
 				{
-					//TODO
+					if(isKeyPressed(key)) {
+						skipNextInstruction();
+					}
 
 					break;
 				}
 
-				case 0xA1: ; //SKIP if Vx is not pressed
+				case 0xA1: ; //SKIP if Vx is not pressed (ExA1)
 				{
-					//TODO
+					if(!isKeyPressed(key)) {
+						skipNextInstruction();
+					}
 
 					break;
 				}
@@ -433,11 +448,10 @@ void runInstruction(u8* instr) {
 
 				case 0x0A: ; // LOAD Vx, K
 				{
-					//TODO
+					//TODO: test
 
-					printf("Waiting input...\n");
-
-					SDL_Delay(2000);
+					u4 key = getKeyPress();
+					setRegister(reg, key);
 
 					break;
 				}
@@ -513,22 +527,15 @@ void runInstruction(u8* instr) {
 //TODO
 void runCPU() {
 
-	SDL_Event evt;
-
-	while(true) {
+	while(isWindowOpen()) {
 		u8* instr = readNextBytes(&cpu->pc, INSTRUCTION_SIZE);
-
-		//printf("Instruction: %X%X\n", instr[0], instr[1]);
-
+		
 		runInstruction(instr);
 		free(instr);
 
 		updateTimers();
 		SDL_Delay(CPU_INTERVAL_BETWEEN_OPS_MILLIS);
 
-		SDL_PollEvent(&evt);
-  		if(evt.type == SDL_QUIT)
-    		break;
 	}
 }
 
