@@ -24,7 +24,6 @@ void storeToMemory(u12 position, u8 value);
 u8 getFromMemory(u12 position);
 
 u8* getMemory(u12 position);
-void setMemory(u8* newMemory);
 
 void loadData(u8* data, u12 size, u12 position);
 int loadProgram(char* filename);

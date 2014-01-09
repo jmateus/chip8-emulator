@@ -44,7 +44,8 @@ void drawSprite(u8 *sprite, u4 x, u4 y, u4 size);
 bool pixelCollision();
 bool isWindowOpen();
 
-void initScreen();
-void initGraphics();
+void setScale(unsigned int scale);
+
+void initGraphics(unsigned int scale);
 
 #endif

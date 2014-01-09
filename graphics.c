@@ -132,12 +132,10 @@ bool isWindowOpen() {
 }
 
 
-void initScreen() {
-	screen = (SCREEN*) calloc(1, sizeof(SCREEN));
-
-	screen->width = CHIP8_SCREEN_WIDTH * CHIP8_SCREEN_SCALE;
-	screen->height = CHIP8_SCREEN_HEIGHT * CHIP8_SCREEN_SCALE;
-	screen->scale = CHIP8_SCREEN_SCALE;
+void setScale(unsigned int scale) {
+	screen->width = CHIP8_SCREEN_WIDTH * scale;
+	screen->height = CHIP8_SCREEN_HEIGHT * scale;
+	screen->scale = scale;
 
 	screen->window = SDL_CreateWindow(
 		WINDOW_TITLE,
@@ -147,6 +145,16 @@ void initScreen() {
 		screen->height,
 		SDL_WINDOW_SHOWN
 	);
+}
+
+
+void initGraphics(unsigned int scale) {
+
+	SDL_Init(SDL_INIT_VIDEO);
+
+	screen = (SCREEN*) calloc(1, sizeof(SCREEN));
+
+	setScale(scale);
 
 	if (screen->window == NULL) {
 		printf("Could not create window: %s\n", SDL_GetError());
@@ -159,11 +167,4 @@ void initScreen() {
 	screen->collision = false;
 
 	clearScreen();
-}
-
-void initGraphics() {
-
-	SDL_Init(SDL_INIT_EVERYTHING); //TODO: init only video
-	initScreen();
-
 }

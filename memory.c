@@ -99,15 +99,8 @@ u8 getFromMemory(u12 position) {
 }
 
 
-//TODO: untested
 u8* getMemory(u12 position) {
 	return &memory[position];
-}
-
-//TODO: untested
-void setMemory(u8* newMemory) {
-	free(memory);
-	memory = newMemory;
 }
 
 

@@ -52,5 +52,16 @@ BEGIN_SUITE("Convert operations",
 );
 
 
+BEGIN_SUITE("Get memory",
+
+	storeToMemory(200, 0xAB);
+	storeToMemory(250, 0xCD);
+
+	mu_assert("should return correct memory pointer", *(getFromMemory(200)) == 0xAB );
+	mu_assert("should return correct memory pointer", *(getFromMemory(250)) == 0xCD );
+
+);
+
+
 END_TESTS_AUTO_RUN
 

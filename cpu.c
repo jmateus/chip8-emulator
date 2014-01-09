@@ -8,12 +8,15 @@
 #include "types.h"
 #include "memory.h"
 #include "graphics.h"
+#include "sound.h"
 #include "input.h"
 
 #include "SDL2/SDL.h"
 
 
 static CPU *cpu;
+static unsigned int clockRate = CPU_DEFAULT_FREQ_HZ;
+static volatile bool run;
 
 
 void setRegister(u4 regist, u8 value) {
@@ -130,9 +133,17 @@ void loadRegisters(u12 addr, u4 reg) {
 	}
 }
 
+
 u8 generateRandomNumber(int maxValue) {
 	u8 rnd = rand() % maxValue;
 	return rnd;
+}
+
+
+void updateSound() {
+	if(cpu->st == 0) {
+		stopTone();
+	}
 }
 
 
@@ -144,8 +155,6 @@ void updateTimers() {
 		cpu->dt = cpu->dt == 0 ? 0 : cpu->dt - 1;
 		cpu->st = cpu->st == 0 ? 0 : cpu->st - 1;
 		cpu->lastUpdate = currTimeMillis;
-
-		//printf("update timers\n");
 	}
 }
 
@@ -460,6 +469,11 @@ void runInstruction(u8* instr) {
 				case 0x18: ; // LOAD ST, Vx
 				{
 					cpu->st = getRegister(reg);
+
+					if(cpu->st > 0) {
+						playTone();
+					}
+
 					break;
 				}
 
@@ -518,19 +532,28 @@ void runInstruction(u8* instr) {
 }
 
 
+void setClockRate(unsigned int rate) {
+	clockRate = rate;
+}
 
-//TODO
+
+void stopCPU() {
+	run = false;
+}
+
+
 void runCPU() {
+	run = true;
 
-	while(isWindowOpen()) {
+	while(isWindowOpen() && run) {
 		u8* instr = readNextBytes(&cpu->pc, INSTRUCTION_SIZE);
 
 		runInstruction(instr);
 		free(instr);
 
 		updateTimers();
-		SDL_Delay(CPU_INTERVAL_BETWEEN_OPS_MILLIS);
-
+		updateSound();
+		SDL_Delay(1000.0/clockRate);
 	}
 }
 

@@ -93,5 +93,5 @@ u4 getKeyPress() {
 
 
 void initInput() {
-	SDL_Init(SDL_INIT_EVERYTHING);
+	SDL_Init(SDL_INIT_VIDEO); //input is in the video module of SDL
 }

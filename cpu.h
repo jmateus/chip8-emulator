@@ -3,8 +3,7 @@
 
 #include "types.h"
 
-#define CPU_FREQ_HZ 1000
-#define CPU_INTERVAL_BETWEEN_OPS_MILLIS (1000.0/CPU_FREQ_HZ)
+#define CPU_DEFAULT_FREQ_HZ 1000
 
 #define TIMER_UPDATES_PER_SECOND 60
 #define TIMER_UPDATE_INTERVAL_MILLIS (1000.0/TIMER_UPDATES_PER_SECOND)
@@ -53,6 +52,9 @@ u8 generateRandomNumber(int maxValue);
 
 CPU* getCPU();
 
+void setClockRate(unsigned int freq);
+
+void stopCPU();
 void runCPU();
 void initCPU();
 
