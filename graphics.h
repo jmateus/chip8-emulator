@@ -10,9 +10,9 @@
 #define CHIP8_SCREEN_WIDTH 64
 #define CHIP8_SCREEN_HEIGHT 32
 #define CHIP8_SCREEN_SIZE (CHIP8_SCREEN_WIDTH * CHIP8_SCREEN_HEIGHT)
-#define CHIP8_SCREEN_SCALE 8
+#define CHIP8_SCREEN_SCALE 12
 
-#define PIXEL(surface, color) SDL_MapRGB( surface->format, color, color, color )
+#define PIXEL(surface, color) SDL_MapRGB(surface->format, color, color, color)
 #define WHITE_PIXEL(surface) PIXEL(surface, 0xFF)
 #define BLACK_PIXEL(surface) PIXEL(surface, 0x00)
 #define WHITE_PIXEL_BOOL true
