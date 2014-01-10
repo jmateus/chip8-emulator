@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "cpu.h"
 #include "graphics.h"
@@ -14,6 +15,11 @@
 
 void startSystem() {
 	INI_NODE* ini = ini_initSimpleIni(CHIP8_CONFIG_FILE);
+
+	if(ini == NULL) {
+		printf("Couldn't load the config file: %s\n", CHIP8_CONFIG_FILE);
+		exit(-1);
+	}
 
 	int scale = ini_getInt(ini, CHIP8_CONFIG_SCALE_KEY, 10);
 	int freq = ini_getInt(ini, CHIP8_CONFIG_CPU_FREQ_KEY, 10);
