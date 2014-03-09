@@ -26,7 +26,7 @@ void startSystem() {
 
 	initMemory();
 	initGraphics(scale);
-	initInput();
+	initInput(ini);
 	initCPU();
 
 	setClockRate(freq);

@@ -7,9 +7,8 @@
 #include "SDL2/SDL.h"
 
 #define NUM_OF_KEYS 16
+#define CHIP8_CONFIG_CONTROLS_KEY "KEY_"
 
-extern SDL_Keycode KEY_CODES[NUM_OF_KEYS];
-extern SDL_Scancode KEY_SCANS[NUM_OF_KEYS];
 
 bool isKeyPressed(u4 key);
 u4 getKeyPress();

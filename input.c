@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 
 #include "input.h"
+#include "lib/simpleini.h"
 #include "SDL2/SDL.h"
 
-SDL_Keycode KEYS[NUM_OF_KEYS] = {
+SDL_Keycode keys[NUM_OF_KEYS] = {
 	SDLK_0,
 	SDLK_1,
 	SDLK_2,
@@ -23,29 +26,10 @@ SDL_Keycode KEYS[NUM_OF_KEYS] = {
 	SDLK_f
 };
 
-SDL_Scancode KEY_SCANS[NUM_OF_KEYS] = {
-	SDL_SCANCODE_0,
-	SDL_SCANCODE_1,
-	SDL_SCANCODE_2,
-	SDL_SCANCODE_3,
-	SDL_SCANCODE_4,
-	SDL_SCANCODE_5,
-	SDL_SCANCODE_6,
-	SDL_SCANCODE_7,
-	SDL_SCANCODE_8,
-	SDL_SCANCODE_9,
-	SDL_SCANCODE_A,
-	SDL_SCANCODE_B,
-	SDL_SCANCODE_C,
-	SDL_SCANCODE_D,
-	SDL_SCANCODE_E,
-	SDL_SCANCODE_F
-};
-
 
 bool isKeyPressed(u4 key) {
 	const Uint8 *state = SDL_GetKeyboardState(NULL);
-	if (state[KEY_SCANS[key]]) {
+	if (state[SDL_GetScancodeFromKey(keys[key])]) {
 		return true;
 	}
 
@@ -61,7 +45,7 @@ bool isKeyCodeValid(int keyCode) {
 u8 getChip8KeyCode(SDL_Keycode key) {
 	int keyCode;
 	for(keyCode = 0; keyCode < NUM_OF_KEYS; keyCode++) {
-		if(KEYS[keyCode] == key) {
+		if(keys[keyCode] == key) {
 			return keyCode;
 		}
 	}
@@ -87,11 +71,26 @@ u4 getKeyPress() {
 		if(isKeyCodeValid(keyCode)) {
 			return keyCode;
 		}
-
 	}
 }
 
 
-void initInput() {
-	SDL_Init(SDL_INIT_VIDEO); //input is in the video module of SDL
+void setupInput(INI_NODE* ini) {
+	char key[strlen(CHIP8_CONFIG_CONTROLS_KEY) + 2]; //keycode and NULL character
+	int keycodeStringIndex = strlen(CHIP8_CONFIG_CONTROLS_KEY); //the keycode is the last character of the string
+
+	int i;
+	for(i = 0; i < NUM_OF_KEYS; i++) {
+		sprintf(key, CHIP8_CONFIG_CONTROLS_KEY "%x", i);
+		key[keycodeStringIndex] = toupper(key[keycodeStringIndex]);
+
+		char* customKey = ini_getValue(ini, key);
+		keys[i] = tolower(customKey[0]);
+	}
+}
+
+
+void initInput(INI_NODE* ini) {
+	SDL_Init(SDL_INIT_VIDEO);
+	setupInput(ini);
 }
