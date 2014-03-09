@@ -52,7 +52,6 @@ void pushStack(u8* stack, u16 value) {
 
 
 u32 convertBytesToU32(u8* bytes, u16 max) {
-
 	u32 number = 0;
 
 	int i;
@@ -66,7 +65,6 @@ u32 convertBytesToU32(u8* bytes, u16 max) {
 
 
 u12 convertBytesToU12(u8* bytes) {
-
 	u12 number = 0;
 
 	number += bytes[0];

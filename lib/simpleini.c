@@ -11,8 +11,6 @@ static bool isComment(char *line) {
 
 
 static bool isLineEmpty(char *line) {
-
-
 	if(strlen(line) == 0) {
 		return true;
 	}
@@ -138,27 +136,4 @@ INI_NODE* ini_initSimpleIni(char *filename) {
 
 	return head;
 }
-
-
-
-/*int main(int argc, char* argv[]) {
-
-	INI_NODE* ini = ini_initSimpleIni(argv[1]);
-
-
-	printf("head: %p\n", ini);
-
-	printf("scale: %s\n", ini_getValue(ini, "SCALE"));
-	printf("back: %s\n", ini_getValue(ini, "BACKGROUND_COLOR"));
-	printf("fore: %s\n", ini_getValue(ini, "FOREGROUND_COLOR"));
-	printf("stuff: %s\n", ini_getValue(ini, "STUFF"));
-	printf("stuff: %s\n", ini_hasKey(ini, "STUFF") ? "true" : "false");
-	printf("scale: %s\n", ini_hasKey(ini, "SCALE") ? "true" : "false");
-	printf("stuff: %s\n", ini_getValueOrDefault(ini, "STUFF", "no stuff"));
-	printf("size: %d\n", ini_size(ini));
-	printf("back int: %d\n", ini_getInt(ini, "SCALE", 10));
-
-	return 0;
-}*/
-
 

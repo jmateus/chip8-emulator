@@ -29,7 +29,6 @@ u8 CHIP8_DEFAULT_CHARSET[][DEFAULT_CHARS_SIZE] =
 static SCREEN *screen;
 
 void drawPixel(int x, int y) {
-
 	int xCoord = x % CHIP8_SCREEN_WIDTH;
 	int yCoord = y % CHIP8_SCREEN_HEIGHT;
 
@@ -60,7 +59,6 @@ void drawPixelOnScreen(int x, int y, Uint32 color) {
 
 	Uint32* pixels = (Uint32*) screen->surface->pixels;
 
-	//TODO: investigar porque
 	pixels[yCoord*((screen->surface->pitch / 4)) + xCoord] = color;
 }
 
@@ -98,7 +96,6 @@ void drawLine(u8 line, u4 x, u4 y) {
 
 
 void drawSprite(u8 *sprite, u4 x, u4 y, u4 size) {
-
 	SDL_LockSurface(screen->surface);
 
 	screen->collision = false;
@@ -149,7 +146,6 @@ void setScale(unsigned int scale) {
 
 
 void initGraphics(unsigned int scale) {
-
 	SDL_Init(SDL_INIT_VIDEO);
 
 	screen = (SCREEN*) calloc(1, sizeof(SCREEN));

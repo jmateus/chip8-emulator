@@ -105,7 +105,7 @@ void shiftLeft(u8 reg, u8 numOfShifts) {
 
 	u8 newValue = regValue << numOfShifts;
 
-	if(((regValue & 0x80) >> 7) == 1) { //TODO: test
+	if(((regValue & 0x80) >> 7) == 1) {
 		setFlag(1);
 	}
 	else {
@@ -286,56 +286,44 @@ void runInstruction(u8* instr) {
 			u4 op = getLowU4(low);
 
 			switch(op) {
-
 				case 0x0: ; // LOAD
-
 					setRegister(firstRegIndex, secondRegValue);
 					break;
 
 				case 0x1: ; // OR
-
 					setRegister(firstRegIndex, firstRegValue | secondRegValue);
 					break;
 
 				case 0x2: ; // AND
-
 					setRegister(firstRegIndex, firstRegValue & secondRegValue);
 					break;
 
 				case 0x3: ; // XOR
-
 					setRegister(firstRegIndex, firstRegValue ^ secondRegValue);
 					break;
 
 				case 0x4: ; // ADD
-
 					addRegisters(firstRegIndex, secondRegIndex);
 					break;
 
 				case 0x5: ; // SUB (x-y)
-
 					subtractRegisters(firstRegIndex, firstRegIndex, secondRegIndex);
 					break;
 
 				case 0x6: ; // SHR 1
-
 					shiftRight(firstRegIndex, 1);
 					break;
 
 				case 0x7: ; // SUBN (y-x)
-
 					subtractRegisters(firstRegIndex, secondRegIndex, firstRegIndex);
 					break;
 
 				case 0xE: ; // SHL 1
-
 					shiftLeft(firstRegIndex, 1);
 					break;
 
 				default: ; //invalid op
-
 					printf("[ERROR] Invalid op for instruction 0x8xxx\n");
-
 			}
 
 			break;
