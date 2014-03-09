@@ -3,7 +3,10 @@ CFLAGS =
 SOURCES = $(wildcard *.c)
 OBJS = $(SOURCES:.c=.o)
 TESTS = $(SOURCES:.c=)
-FILES = $(wildcard ../*.o) $(wildcard ../lib/*.o)
+
+ALL_FILES = $(wildcard ../*.o) $(wildcard ../lib/*.o)
+FILES = $(filter-out ../main.o,$(ALL_FILES))
+
 LIBS = -lmingw32 -lSDL2main -lSDL2
 HEADERS_MK = ./.headers
 
@@ -12,7 +15,7 @@ all: $(TESTS)
 $(TESTS): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $@.o $(FILES) $(LIBS)
 
-%.o:
+.c.o:
 	$(CC) $(CFLAGS) -c $*.c $(LIBS)
 
 run:

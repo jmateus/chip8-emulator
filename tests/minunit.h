@@ -12,9 +12,14 @@
 #include <stdio.h>
 
 // Default stream used to output test's messages
-#define DEFAULT_STREAM stdout
+#define MIN_UNIT_DEFAULT_STREAM stdout
 
-// Stream used to output test's feedback. Can be override by the user. Default value is DEFAULT_STREAM.
+// TODO: Use ANSI colors to print log messages
+#define MIN_UNIT_COLOR_RED ""
+#define MIN_UNIT_COLOR_GREEN ""
+#define MIN_UNIT_COLOR_RESET ""
+
+// Stream used to output test's feedback. Can be override by the user. Default value is MIN_UNIT_DEFAULT_STREAM.
 FILE* outStream = NULL;
 
 // Number of tests ran in a suite
@@ -36,7 +41,7 @@ static int detailedLogs = 1;
 // and total sucessful tests.
 void setupTests() {
 	if(outStream == NULL) {
-		outStream = DEFAULT_STREAM;
+		outStream = MIN_UNIT_DEFAULT_STREAM;
 	}
 
 	totalTests = 0;
@@ -55,14 +60,14 @@ void setupSuite() {
 #define mu_assert(message, test) do { \
 	if(!(test)) { \
 		if(detailedLogs) { \
-			fprintf(outStream, "[FAILED] %s\n", message); \
+			fprintf(outStream, MIN_UNIT_COLOR_RED "[FAILED] " MIN_UNIT_COLOR_RESET "%s\n", message); \
 		} \
 		testsRun++; \
 		totalTests++; \
 	} \
 	else { \
 		if(detailedLogs) { \
-			fprintf(outStream, "[SUCCESS] %s\n", message); \
+			fprintf(outStream, MIN_UNIT_COLOR_GREEN "[SUCCESS] " MIN_UNIT_COLOR_RESET "%s\n", message); \
 		} \
 		testsRun++; \
 		totalTests++; \
@@ -93,7 +98,9 @@ void setupSuite() {
 	code \
 	\
 	if(detailedLogs) { \
-		fprintf(outStream, "\n[FINISHED] %d out of %d tests were successful\n\n", successfulTests, testsRun); \
+		fprintf(outStream, "\n%s[FINISHED]%s %d out of %d tests were successful\n\n", \
+			successfulTests == testsRun ? MIN_UNIT_COLOR_GREEN : MIN_UNIT_COLOR_RED, \
+			MIN_UNIT_COLOR_RESET, successfulTests, testsRun); \
 	} \
 } while(0);
 

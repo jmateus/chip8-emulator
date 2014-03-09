@@ -1,4 +1,6 @@
 #include "../memory.h"
+#include "../graphics.h"
+
 #include "minunit.h"
 
 BEGIN_TESTS("Memory")
@@ -61,6 +63,58 @@ BEGIN_SUITE("Get memory",
 	mu_assert("should return correct memory pointer", *(getMemory(250)) == 0xCD );
 
 );
+
+
+BEGIN_SUITE("Load data",
+
+	u8 data[] = STATIC_INIT({ 0xaa, 0xbb, 0xcc, 0xdd });
+
+	loadData(data, 4, 100);
+
+	int i;
+	for(i = 0; i < 4; i++) {
+		mu_assert("should load a array of data", getFromMemory(100 + i) == data[i]);
+	}
+	
+);
+
+
+BEGIN_SUITE("Load program",
+
+	loadProgram("test files/maze.ch8");
+
+	mu_assert("should load a program correctly", getFromMemory(PROGRAM_OFFSET) == 0x60);
+	mu_assert("should load a program correctly", getFromMemory(PROGRAM_OFFSET + 16) == 0x30);
+	mu_assert("should load a program correctly", getFromMemory(PROGRAM_OFFSET + 37) == 0x10);
+
+);
+
+
+BEGIN_SUITE("Load charset",
+
+	loadDefaultCharset((u8*) CHIP8_DEFAULT_CHARSET, DEFAULT_CHARSET_SIZE);
+
+	mu_assert("should load a charset correctly", 
+		getFromMemory(CHARSET_OFFSET) == (CHIP8_DEFAULT_CHARSET[0][0]));
+	mu_assert("should load a charset correctly", 
+		getFromMemory(CHARSET_OFFSET + (NUMBER_CHARS-1) * DEFAULT_CHARS_SIZE + 2) 
+		== (CHIP8_DEFAULT_CHARSET[NUMBER_CHARS-1][2]));
+	mu_assert("should load a charset correctly", 
+		getFromMemory(CHARSET_OFFSET + (NUMBER_CHARS-1) * DEFAULT_CHARS_SIZE + DEFAULT_CHARS_SIZE - 1) 
+		== (CHIP8_DEFAULT_CHARSET[NUMBER_CHARS-1][DEFAULT_CHARS_SIZE - 1]));
+
+);
+
+
+BEGIN_SUITE("Return char location",
+
+	mu_assert("should return the correct location of a char", getCharLocation(0x9) 
+		== (CHARSET_OFFSET + DEFAULT_CHARS_SIZE*0x9) );
+	mu_assert("should return the correct location of a char", getCharLocation(0xf) 
+		== (CHARSET_OFFSET + DEFAULT_CHARS_SIZE*0xf) );
+
+);
+
 
 
 END_TESTS_AUTO_RUN

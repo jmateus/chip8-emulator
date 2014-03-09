@@ -1,4 +1,7 @@
 #include "../cpu.h"
+#include "../memory.h"
+#include "../charset.h"
+
 #include "minunit.h"
 
 BEGIN_TESTS("CPU Ops")
@@ -352,6 +355,21 @@ BEGIN_SUITE("Add register with I",
 	runInstruction(instr);
 
 	mu_assert("should add register and I, storing result in I", getRegisterI() == 0xDE);
+
+);
+
+
+BEGIN_SUITE("Load char location",
+
+	setRegisterI(0x00);
+	setRegister(0xA, 0x0F);
+
+	u12 charPos = (CHARSET_OFFSET + DEFAULT_CHARS_SIZE*0xF);
+	
+	u8 instr[] = STATIC_INIT({0xFA, 0x29});
+	runInstruction(instr);
+
+	mu_assert("should load the correct location of a char", getRegisterI() == charPos);
 
 );
 

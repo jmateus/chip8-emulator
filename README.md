@@ -17,8 +17,8 @@ Compile, test and run
 ---------------
 
 To compile, just run `make`. 
-To run all the unit tests, run `make test`.
-To start the emulator, run the command `chip 8 <program>`, with `<program>` being the path to a ch8 file.
+To run all the unit tests, copy `SDL2.dll` to the tests folder and run `make test` in the root folder.
+To start the emulator, copy `SDL2.dll` to the same folder of the executable and run the command `chip 8 <program>`, with `<program>` being the path to a ch8 file.
 
 
 Configuration file
@@ -36,6 +36,6 @@ TODO
 
 + Implement the sound module
 + Add more options to the config.ini
-+ Write the missing tests, especially for the graphics and input modules
++ Write tests for the graphics and input modules
 + Add a toolbar to the emulator window
 + Test on Linux

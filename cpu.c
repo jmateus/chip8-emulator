@@ -186,8 +186,6 @@ void runInstruction(u8* instr) {
 
 			switch(number) {
 				case 0x00E0: ; //CLS (00E0)
-					//TODO: test
-
 					clearScreen();
 
 					break; 
@@ -404,7 +402,7 @@ void runInstruction(u8* instr) {
 			break;
 		}
 
-		case 0xE: ; // Input - TODO: test
+		case 0xE: ;
 		{
 			u4 regIndex = getLowU4(high);
 			u8 key = getRegister(regIndex);
@@ -448,8 +446,6 @@ void runInstruction(u8* instr) {
 
 				case 0x0A: ; // LOAD Vx, K
 				{
-					//TODO: test
-
 					u4 key = getKeyPress();
 					setRegister(reg, key);
 
@@ -482,8 +478,6 @@ void runInstruction(u8* instr) {
 
 				case 0x29: ; // LD F, Vx
 				{
-					//TODO: test
-
 					u4 character = getRegister(reg);
 					u12 charLocation = getCharLocation(character);
 

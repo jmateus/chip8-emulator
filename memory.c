@@ -102,13 +102,11 @@ u8* getMemory(u12 position) {
 }
 
 
-//TODO: untested
 void loadData(u8* data, u12 size, u12 position) {
 	memcpy(&memory[position], data, size);
 }
 
 
-//TODO: untested
 int loadProgram(char* filename) {
 	FILE* file = fopen(filename, "rb");
 
@@ -125,13 +123,11 @@ int loadProgram(char* filename) {
 }
 
 
-//TODO: untested
 void loadDefaultCharset(u8* charset, u12 size) {
 	loadData(charset, size, CHARSET_OFFSET);
 }
 
 
-//TODO: untested
 u12 getCharLocation(u4 character) {
 	return CHARSET_OFFSET + (character * DEFAULT_CHARS_SIZE);
 }
