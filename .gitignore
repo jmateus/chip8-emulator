@@ -4,5 +4,7 @@
 /Programs
 
 .headers
+lib/.headers
+tests/.headers
 SDL2.dll
 sdl2-config

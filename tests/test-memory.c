@@ -1,7 +1,7 @@
 #include "../memory.h"
 #include "minunit.h"
 
-BEGIN_TESTS
+BEGIN_TESTS("Memory")
 
 initMemory();
 
@@ -57,8 +57,8 @@ BEGIN_SUITE("Get memory",
 	storeToMemory(200, 0xAB);
 	storeToMemory(250, 0xCD);
 
-	mu_assert("should return correct memory pointer", *(getFromMemory(200)) == 0xAB );
-	mu_assert("should return correct memory pointer", *(getFromMemory(250)) == 0xCD );
+	mu_assert("should return correct memory pointer", *(getMemory(200)) == 0xAB );
+	mu_assert("should return correct memory pointer", *(getMemory(250)) == 0xCD );
 
 );
 

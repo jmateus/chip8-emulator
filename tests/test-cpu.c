@@ -1,10 +1,10 @@
 #include "../cpu.h"
 #include "minunit.h"
 
-BEGIN_TESTS
+BEGIN_TESTS("CPU")
 
-initCPU();
 initMemory();
+initCPU();
 
 BEGIN_SUITE("Registers",
 

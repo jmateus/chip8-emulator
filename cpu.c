@@ -23,13 +23,16 @@ void setRegister(u4 regist, u8 value) {
 	cpu->registers[regist] = value;
 }
 
+
 u8 getRegister(u4 regist) {
 	return cpu->registers[regist];
 }
 
+
 void skipNextInstruction() {
 	cpu->pc += INSTRUCTION_SIZE;
 }
+
 
 u8 setFlag(u8 value) {
 	u8 oldValue = getRegister(FLAG_REGISTER_INDEX);
@@ -38,13 +41,16 @@ u8 setFlag(u8 value) {
 	return oldValue;
 }
 
+
 u8 getFlag() {
 	return getRegister(FLAG_REGISTER_INDEX);
 }
 
+
 void setRegisterI(u16 value) {
 	cpu->I = value;
 }
+
 
 u16 getRegisterI() {
 	return cpu->I;
@@ -85,6 +91,7 @@ void subtractRegisters(u4 target, u4 x, u4 y){
 	setRegister(target, result);
 }
 
+
 void shiftRight(u8 reg, u8 numOfShifts) {
 	u8 regValue = getRegister(reg);
 
@@ -99,6 +106,7 @@ void shiftRight(u8 reg, u8 numOfShifts) {
 
 	setRegister(reg, newValue);
 }
+
 
 void shiftLeft(u8 reg, u8 numOfShifts) {
 	u8 regValue = getRegister(reg);
@@ -116,7 +124,6 @@ void shiftLeft(u8 reg, u8 numOfShifts) {
 }
 
 
-
 void storeRegisters(u12 addr, u4 reg) {
 	int i;
 	for(i = 0; i <= reg; i++) {
@@ -124,6 +131,7 @@ void storeRegisters(u12 addr, u4 reg) {
 		storeToMemory(addr + i, regValue);
 	}
 }
+
 
 void loadRegisters(u12 addr, u4 reg) {
 	int i;

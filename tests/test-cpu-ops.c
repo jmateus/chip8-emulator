@@ -1,10 +1,10 @@
 #include "../cpu.h"
 #include "minunit.h"
 
-BEGIN_TESTS
+BEGIN_TESTS("CPU Ops")
 
-initCPU();
 initMemory();
+initCPU();
 CPU* cpu = getCPU();
 
 BEGIN_SUITE("Return instruction",
@@ -302,7 +302,6 @@ BEGIN_SUITE("Random number",
 	runInstruction(instr);
 
 	u8 rnd = getRegister(0xA);
-	printf("rnd: %x\n", rnd);
 
 	mu_assert("should be equal or greater than zero", rnd >= 0);
 	mu_assert("should be less than 256", rnd < MAX_RANDOM_VALUE);

@@ -27,6 +27,9 @@ static int totalTests;
 // Total number of successful tests rand in a module
 static int totalSuccessfulTests;
 
+// Print detailed logs
+static int detailedLogs = 1;
+
 
 // Initializes the values needed for a test module. A test module is composed of many test suites.
 // Setups the output stream used (in the case it wasn't overriden by the user) and the counters of total tests
@@ -51,12 +54,16 @@ void setupSuite() {
 // Checks if the test is true.
 #define mu_assert(message, test) do { \
 	if(!(test)) { \
-		fprintf(outStream, "[FAILED] %s\n", message); \
+		if(detailedLogs) { \
+			fprintf(outStream, "[FAILED] %s\n", message); \
+		} \
 		testsRun++; \
 		totalTests++; \
 	} \
 	else { \
-		fprintf(outStream, "[SUCCESS] %s\n", message); \
+		if(detailedLogs) { \
+			fprintf(outStream, "[SUCCESS] %s\n", message); \
+		} \
 		testsRun++; \
 		totalTests++; \
 		successfulTests++; \
@@ -67,31 +74,39 @@ void setupSuite() {
 
 // Macro used to initialize a test module.
 // It generates a function called runTests that contains every test of the module.
-#define BEGIN_TESTS void runTests() { \
+#define BEGIN_TESTS(name) void runTests() { \
 	setupTests(); \
 	fprintf(outStream, "##############################\n");\
-	fprintf(outStream, "[INFO] STARTING TESTS\n"); \
+	fprintf(outStream, "[INFO] STARTING TESTS: " name "\n"); \
 	fprintf(outStream, "##############################\n\n");\
 
 
 // Macro used to declare a new test suite. Name is the name of the suite. Code is everything done in the suite.
 #define BEGIN_SUITE(name, code) do { \
-	fprintf(outStream, "==============================\n");\
-	fprintf(outStream, "[INFO] Starting %s\n", name);\
-	fprintf(outStream, "==============================\n\n");\
+	if(detailedLogs) { \
+		fprintf(outStream, "==============================\n");\
+		fprintf(outStream, "[INFO] Starting %s\n", name);\
+		fprintf(outStream, "==============================\n\n");\
+	} \
 	setupSuite(); \
 	\
 	code \
 	\
-	fprintf(outStream, "\n[FINISHED] %d out of %d tests were successful\n\n", successfulTests, testsRun); \
+	if(detailedLogs) { \
+		fprintf(outStream, "\n[FINISHED] %d out of %d tests were successful\n\n", successfulTests, testsRun); \
+	} \
 } while(0);
 
 
 // Helper macro to create a scope for one test.
 #define TEST(message, code) do { \
-	fprintf(outStream, "\n[INFO] Start testing: %s\n", message); \
+	if(detailedLogs) { \
+		fprintf(outStream, "\n[INFO] Start testing: %s\n", message); \
+	} \
 	code \
-	fprintf(outStream, "[INFO] End testing: %s\n\n", message); \
+	if(detailedLogs) { \
+		fprintf(outStream, "[INFO] End testing: %s\n\n", message); \
+	} \
 } while(0);
 
 
@@ -106,6 +121,11 @@ void setupSuite() {
 // The main function simply calls runTests and returns zero.
 #define END_TESTS_AUTO_RUN END_TESTS \
 	int main(int argc, char **argv) { \
+		if(argc > 1) { \
+			if(argv[1][0] == '-' && argv[1][1] == 's') { \
+				detailedLogs = 0; \
+			} \
+		} \
 		runTests(); \
 		\
 		return 0; \

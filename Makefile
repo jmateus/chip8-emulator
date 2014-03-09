@@ -1,26 +1,29 @@
 CC = gcc
 CFLAGS = 
 EXECUTABLE = chip8
-SOURCES = memory.c graphics.c input.c sound.c cpu.c main.c
+SOURCES = $(wildcard lib/*.c) $(wildcard *.c)
 OBJS = $(SOURCES:.c=.o)
-LIB_OBJS = lib/simpleini.o
 LIBS = -lmingw32 -lSDL2main -lSDL2
 HEADERS_MK = ./.headers
 
 all: $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJS)
-	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(OBJS) $(LIB_OBJS) $(LIBS)
+	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(OBJS) $(LIBS)
 
 .c.o:
-	$(CC) $(CFLAGS) -c $< $(LIBS)
+	$(CC) $(CFLAGS) -c $< -o $*.o $(LIBS)
+
+test:
+	make --directory=./tests
+	make --directory=./tests run
 
 clean:
-	-rm -f *.o *.exe *.EXE $(HEADERS_MK)
+	-rm -f *.o *.gch *.exe *.EXE $(HEADERS_MK)
 
 $(HEADERS_MK): $(SOURCES)
 	$(CC) $(CFLAGS) -MM $^ > $(HEADERS_MK)
 
-.PHONY: all clean
+.PHONY: all clean test
 
 include $(HEADERS_MK)

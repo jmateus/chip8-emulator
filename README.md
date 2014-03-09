@@ -13,10 +13,12 @@ Requirements
 + SDL 2
 
 
-Compile and run
+Compile, test and run
 ---------------
 
-To compile, just run `make`. To start the emulator, run the command `chip 8 <program>`, with `<program>` being the path to a ch8 file.
+To compile, just run `make`. 
+To run all the unit tests, run `make test`.
+To start the emulator, run the command `chip 8 <program>`, with `<program>` being the path to a ch8 file.
 
 
 Configuration file
