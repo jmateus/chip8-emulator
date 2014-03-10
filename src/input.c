@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 #include "input.h"
-#include "lib/simpleini.h"
+#include "../lib/simpleini.h"
 #include "SDL2/SDL.h"
 
 SDL_Keycode keys[NUM_OF_KEYS] = {

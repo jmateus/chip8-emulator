@@ -1,4 +1,5 @@
-#include "../cpu.h"
+#include "../src/cpu.h"
+
 #include "minunit.h"
 
 BEGIN_TESTS("CPU")

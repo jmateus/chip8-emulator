@@ -3,12 +3,13 @@ CFLAGS =
 SOURCES = $(wildcard *.c)
 OBJS = $(SOURCES:.c=.o)
 TESTS = $(SOURCES:.c=)
-
-ALL_FILES = $(wildcard ../*.o) $(wildcard ../lib/*.o)
-FILES = $(filter-out ../main.o,$(ALL_FILES))
-
 LIBS = -lmingw32 -lSDL2main -lSDL2
+
+ALL_FILES = $(wildcard ../obj/*.o) $(wildcard ../lib/*.o)
+FILES = $(filter-out ../obj/main.o,$(ALL_FILES))
+
 HEADERS_MK = ./.headers
+
 
 all: $(TESTS)
 
@@ -22,7 +23,7 @@ run:
 	$(foreach test,$(TESTS), ./$(test) -s;)
 
 clean:
-	-rm -f *.o *.exe *.EXE $(HEADERS_MK)
+	-rm -f *.o *.gch *.exe *.EXE $(HEADERS_MK)
 
 $(HEADERS_MK): $(SOURCES)
 	$(CC) $(CFLAGS) -MM $^ > $(HEADERS_MK)

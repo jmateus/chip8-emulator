@@ -3,7 +3,7 @@ Chip-8 Emulator
 
 A simple Chip-8 emulator, written in C. 
 
-It was only tested on Windows, but will most likely work on Linux if the MinGW lib is removed from the makefile.
+It was only tested on Windows, but will most likely work on Linux with some changes to the makefile.
 
 
 Requirements

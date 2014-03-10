@@ -1,10 +1,10 @@
-#include "../cpu.h"
-#include "../memory.h"
-#include "../charset.h"
+#include "../src/cpu.h"
+#include "../src/memory.h"
+#include "../src/charset.h"
 
 #include "minunit.h"
 
-BEGIN_TESTS("CPU Ops")
+BEGIN_TESTS("CPU ops")
 
 initMemory();
 initCPU();

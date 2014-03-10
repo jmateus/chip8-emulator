@@ -1,5 +1,5 @@
-#include "../memory.h"
-#include "../graphics.h"
+#include "../src/memory.h"
+#include "../src/graphics.h"
 
 #include "minunit.h"
 

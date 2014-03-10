@@ -6,7 +6,7 @@
 #include "memory.h"
 #include "input.h"
 
-#include "lib/simpleini.h"
+#include "../lib/simpleini.h"
 
 #define CHIP8_CONFIG_FILE "config.ini"
 #define CHIP8_CONFIG_SCALE_KEY "SCALE"
