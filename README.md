@@ -39,5 +39,5 @@ TODO
 + Implement the sound module
 + Add more options to the config.ini
 + Write tests for the graphics and input modules
-+ Add a toolbar to the emulator window
++ Add a toolbar to the emulator window (change colors, pause CPU, open ROM, etc)
 + Test on Linux
